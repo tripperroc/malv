@@ -104,6 +104,9 @@ function toggleSelect(){
 
 function addTransition( transition ){
 	// hook up end state to transition
+	if(this.transitions[transition.character] != null) {
+		transition.character = prompt("Enter a transition character");
+	}
 	this.transitions[transition.character] = transition.endState;
 	for( var i=0; i<this.tranList.length; i++ ){
 		var T = this.tranList[i];
