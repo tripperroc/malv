@@ -51,6 +51,7 @@ function packToString(){
 	//console.log(JSON.stringify(jQstates));
 	
 	saveString = JSON.stringify(jQstates, stringifyHelp);
+	
 	return saveString;
 }
 
