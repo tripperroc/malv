@@ -39,6 +39,7 @@ var CyclicCache = [];
 
 function packToString(){
 	console.log("packToString");
+	
 	CyclicCache = [];
 	jQstates = arrayToObject(Qstates); // turn collection of states into an object
 	
@@ -76,6 +77,7 @@ function saveAsFile(){
 
 function unpackString(loadString){
 	console.log("unpackString");
+	
 	parsed = JSON.parse(loadString || "null", parseHelp); // turn returned string into an object
 
 	if ( Turing ){
