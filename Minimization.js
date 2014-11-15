@@ -140,8 +140,9 @@ function merge(state1,state2){
 }
 
 function isFinalState(state){
-	for (fstate in FStates){
-		if (fstate == state.id){
+	for (var i = 0; i < FStates.length; ++i){
+		var fstate = FStates[i];
+		if (fstate.id == state.id){
 			return true;
 		}
 	}
