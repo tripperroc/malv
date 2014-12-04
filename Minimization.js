@@ -27,7 +27,7 @@ function minimize(){
 	
 	for (var i = 0; i < Qstates.length; ++i){
 		matrix.push([]);
-		for (var j = 0; j < i; ++j){
+		for (var j = 0; j <= i; ++j){
 			if (isFinalState(Qstates[i]) == isFinalState(Qstates[j])){
 				matrix[i].push("");
 			}
@@ -38,7 +38,12 @@ function minimize(){
 		}
 	}
 	
+	
+	
 	matrix = minimizeHelp(matrix);
+	
+	
+	
 	
 	//deepcopy
 	var QstatesCopy = objectToArray(JSON.parse(JSON.stringify(arrayToObject(Qstates),stringifyHelp)));
@@ -48,6 +53,7 @@ function minimize(){
 			console.log(matrix[i][j], i, j);
 			if (matrix[i][j] == ""){
 				//merge the i and j
+				console.log("ij", i, j);
 				merge(QstatesCopy[j],QstatesCopy[i]);
 				break;
 			}
@@ -74,16 +80,15 @@ function minimizeHelp(matrix){
 				for (c in Qstates[i].transitions){//c is the transition character
 					var k = findIndex(Qstates[i].transitions[c]);
 					var l = findIndex(Qstates[j].transitions[c]);
+					
 					if (l<k){
 						if (matrix[k][l] != ""){
-							console.log(i, j, c, matrix[i][j]);
 							didChange = true;
 							matrix[i][j] = c;
 						}
 					}
 					else{
 						if (matrix[l][k] != ""){
-							console.log(i, j, c, matrix[i][j]);
 							didChange = true;
 							matrix[i][j] = c;
 						}
@@ -129,7 +134,13 @@ function merge(state1,state2){
 	
 	for (var i = 0; i < Qstates.length; ++i){
 		var state = Qstates[i];
+		console.log("i", i)
+		console.log("state", state);
+		console.log("stateid", state.id);
+		console.log("state2id", state2.id);
 		if (state.id == state2.id){
+			console.log("in if");
+			console.log("tranlist", state.tranList);
 			state.destroy();
 			break;
 		}
