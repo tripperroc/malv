@@ -59,13 +59,17 @@ function step(s,newInput){
 
 //TODO: Edit to search all branches of the NFA
 function isAccepted(input,newInput){
-	// if machine ends in accept state
-	if( $.inArray(currentState, FStates) != -1 ){
-		alert("Machine completed in accept " + currentState.label + " State for string " + input);
-		if(newInput){setAcceptedForInput(AcceptedForInput.ACCEPTED);}
-		return AcceptedForInput.ACCEPTED;
+	curstates = "";
+	for(i=0; i < currentStates.length; i++){
+		// if machine ends in accept state
+		if( $.inArray(currentStates[i], FStates) != -1 ){
+			alert("Machine completed in accept " + currentStates[i].label + " State for string " + input);
+			if(newInput){setAcceptedForInput(AcceptedForInput.ACCEPTED);}
+			return AcceptedForInput.ACCEPTED;
+		}
+		curstates += currentStates[i].label + ", ";
 	}
-	alert("Not accepted, \n finished  in state " + currentState.label + " for string " + input);
+	alert("Not accepted, \n finished  in states " + curstates + "for string " + input);
 	if(newInput){setAcceptedForInput(AcceptedForInput.NOTACCEPTED);}
 	return AcceptedForInput.NOTACCEPTED;
 }
@@ -83,8 +87,8 @@ function readInput(input,newInput){
 	//console.log(input);
 	
 	// set up initial states
-	currentState = Qzero;
-	prevState = null;
+	currentStates[0] = Qzero;
+	prevStates = null;
 	nextState = null;
 	inputList = input.split("");
 	
@@ -132,25 +136,26 @@ function readInputAnimated(input){
 	
 		drawReadingCharacters(animatedInput);
 
+		for( i = 0; i < currentStates.length; i++){
+			drawHighlighted(currentStates[i].x,currentStates[i].y,currentStates[i].radius+3);
+		}
 		
-		drawHighlighted(currentState.x,currentState.y,currentState.radius+3);
-
 		if(animatedInput  == inputList.length){ // at the end of the input list
 		
-			if( $.inArray(currentState, FStates) != -1 ){
-				
-				alert("Machine completed in accept State");
-				
-				setAcceptedForInput(AcceptedForInput.ACCEPTED);
-				animating = false; // updates can start drawing again
-				return;
+			for( i = 0; i < currentStates.length; i++){
+				if( $.inArray(currentStates[i], FStates) != -1 ){
+					
+					alert("Machine completed in accept State");
+					
+					setAcceptedForInput(AcceptedForInput.ACCEPTED);
+					animating = false; // updates can start drawing again
+					return;
+				}
 			}
-			else{
-				alert("Not accepted, \n finished  in state" + currentState.label);
-				setAcceptedForInput(AcceptedForInput.NOTACCEPTED);
-				animating = false; // updates can start drawing again
-				return;
-			}
+			alert("Not accepted, \n finished  in state" + currentState.label);
+					setAcceptedForInput(AcceptedForInput.NOTACCEPTED);
+					animating = false; // updates can start drawing again
+					return;
 		}
 		
 		// step with current input
@@ -194,8 +199,8 @@ function debugInput(){
 	}
 	
 	// set up states
-	currentState = Qzero;
-	prevState = null;
+	currentStates[0] = Qzero;
+	prevStates = null;
 	nextState = null;
 	inputList = input.split("");
 
