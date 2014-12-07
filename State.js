@@ -20,7 +20,7 @@ function State( X, Y, id){
 	// Functions
 	//this.snapTransition = snapTransitionToState;
 	this.display = stateDisplay;
-	this.addTransition = addTransition;
+	this.addTransition = addNFATransition;
 	this.toggleSelect = toggleSelect;
 	this.destroy = StateDestroy;
 }
