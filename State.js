@@ -24,6 +24,31 @@ function State( X, Y, id){
 	this.toggleSelect = toggleSelect;
 	this.destroy = StateDestroy;
 }
+
+/**
+ * NFAState
+ * This is a state in a NFA
+ */
+ function NFAState( X, Y, id){
+	// Vars
+	this.transitions = {}[];
+	this.tranList = new Array();
+	this.id = id;
+	this.label = id;
+	this.x = X;
+	this.y = Y;
+	this.radius = 20;
+	this.selected = false;
+	this.moving = false;
+	this.drawStartArrow = drawStartArrow;
+
+	// Functions
+	//this.snapTransition = snapTransitionToState;
+	this.display = stateDisplay;
+	this.addTransition = addTransition;
+	this.toggleSelect = toggleSelect;
+	this.destroy = StateDestroy;
+}
 //----------------------------------
 // ---------- Turing State ---------
 //
@@ -122,8 +147,13 @@ function addTransition( transition ){
 **/
 function addNFATransition( transition ){
 	// hook up end state to transition
-	this.transitions[transition.character] = transition.endState;
-
+	var x = 0;
+	
+	while(this.transitions[transition.character][x] != null)
+		x++;
+	
+	this.transitions[transition.character][x] = transition.endState;
+	
 	this.tranList.push(transition);
 }
 
