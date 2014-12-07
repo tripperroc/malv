@@ -156,7 +156,9 @@ function handleEvent(e){
 		  		tempStateName = prompt("What would you like to name this new state?");
 		  	}
 		  	else{
-		  		tempStateName = highestStateNum;
+		  		q_str = "q"
+		  		numberStr = highestStateNum.toString();
+		  		tempStateName = q_str.concat(numberStr);
 		  		highestStateNum++;
 		  	}
 			newState = new State(clickX,clickY, tempStateName);
