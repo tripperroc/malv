@@ -130,14 +130,14 @@ function toggleSelect(){
 function addTransition( transition ){
 	// hook up end state to transition
 	this.transitions[transition.character] = transition.endState;
-	for( var i=0; i<this.tranList.length; i++ ){
+/*	for( var i=0; i<this.tranList.length; i++ ){
 		var T = this.tranList[i];
 		
 		if( T.character == transition.character ){
 			var index = this.tranList.indexOf(T);
 			this.tranList.splice( index, 1 );
 		}
-	}
+	}*/
 	this.tranList.push(transition);	
 }
 
