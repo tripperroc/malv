@@ -150,11 +150,11 @@ function addNFATransition( transition ){
 	if(this.transitions[transition.character] == null)
 		this.transitions[transition.character] = new Array();
 	
-	if($.inArray(transition.endState, this.transitions[transition.character]) != -1){
+	//if($.inArray(transition.endState, this.transitions[transition.character]) != -1){
 		this.transitions[transition.character][this.transitions[transition.character].length] = transition.endState;
 	
 		this.tranList.push(transition);
-	}
+	//}
 }
 
 function addTuringTransition( transition ){
