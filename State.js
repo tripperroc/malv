@@ -6,7 +6,7 @@ var textoffset = 0;
 //
 function State( X, Y, id){
 	// Vars
-	this.transitions = [][];
+	this.transitions = new Array();
 	this.tranList = new Array();
 	this.id = id;
 	this.label = id;
@@ -31,7 +31,7 @@ function State( X, Y, id){
  */
  function NFAState( X, Y, id){
 	// Vars
-	this.transitions = [][];
+	this.transitions = {};
 	this.tranList = new Array();
 	this.id = id;
 	this.label = id;
@@ -147,9 +147,14 @@ function addTransition( transition ){
 **/
 function addNFATransition( transition ){
 	// hook up end state to transition
-	this.transitions[transition.character][this.transitions[transition.character].length] = transition.endstate;
+	if(this.transitions[transition.character] == null)
+		this.transitions[transition.character] = new Array();
 	
-	this.tranList.push(transition);
+	if($.inArray(transition.endState, this.transitions[transition.character]) != -1){
+		this.transitions[transition.character][this.transitions[transition.character].length] = transition.endState;
+	
+		this.tranList.push(transition);
+	}
 }
 
 function addTuringTransition( transition ){
