@@ -109,7 +109,7 @@ function stateDisplay(){
 	// Use radius and Color
 	ctx.font="20px Georgia";
 	ctx.fillStyle="black";
-	ctx.fillText(this.label,this.x-5,this.y+5);
+	ctx.fillText(this.label,this.x-5*this.label.length,this.y+5);
 	
 	// Draw all attached transitions
 	overlapping = new Array();
