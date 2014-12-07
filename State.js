@@ -31,7 +31,7 @@ function State( X, Y, id){
  */
  function NFAState( X, Y, id){
 	// Vars
-	this.transitions = {}[];
+	this.transitions = {};
 	this.tranList = new Array();
 	this.id = id;
 	this.label = id;
@@ -147,12 +147,10 @@ function addTransition( transition ){
 **/
 function addNFATransition( transition ){
 	// hook up end state to transition
-	var x = 0;
+	newTrans = {};
+	newTrans[transition.character] = this.transitions[transition.character];
 	
-	while(this.transitions[transition.character][x] != null)
-		x++;
-	
-	this.transitions[transition.character][x] = transition.endState;
+	this.transitions[transition.character][this.transitions[transition.character].length] = transition.endstate;
 	
 	this.tranList.push(transition);
 }
