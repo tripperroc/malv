@@ -6,7 +6,7 @@ var textoffset = 0;
 //
 function State( X, Y, id){
 	// Vars
-	this.transitions = {};
+	this.transitions = [][];
 	this.tranList = new Array();
 	this.id = id;
 	this.label = id;
@@ -20,7 +20,7 @@ function State( X, Y, id){
 	// Functions
 	//this.snapTransition = snapTransitionToState;
 	this.display = stateDisplay;
-	this.addTransition = addTransition;
+	this.addTransition = addNFATransition;
 	this.toggleSelect = toggleSelect;
 	this.destroy = StateDestroy;
 }
@@ -31,7 +31,7 @@ function State( X, Y, id){
  */
  function NFAState( X, Y, id){
 	// Vars
-	this.transitions = {};
+	this.transitions = [][];
 	this.tranList = new Array();
 	this.id = id;
 	this.label = id;
@@ -147,9 +147,6 @@ function addTransition( transition ){
 **/
 function addNFATransition( transition ){
 	// hook up end state to transition
-	newTrans = {};
-	newTrans[transition.character] = this.transitions[transition.character];
-	
 	this.transitions[transition.character][this.transitions[transition.character].length] = transition.endstate;
 	
 	this.tranList.push(transition);
