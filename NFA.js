@@ -16,8 +16,8 @@ var FStates     = [];
 // input
 
 // step state information
-var currentState;
-var prevState;
+var currentStates = [];
+var prevStates = [];
 
 
 var boxInput = "";
@@ -29,17 +29,31 @@ var alerts = true; // this boolean will turn on and off alerts because the annoy
 // s is an index in the input string, newInput is if it hasn't been proceessed before	
 function step(s,newInput){
 	
-	// get next state from currentState with next character
-	nextState = getNextState( currentState, inputList[s] ); 
-	if( nextState == null ){
-		alert("Failure, no transition found");
-		if(newInput){setAcceptedForInput(AcceptedForInput.NOTACCEPTED);}
-		return AcceptedForInput.NOTACCEPTED;
+	// get all the next states from all the current states with next character
+	for( i = 0; i < currentStates.length; i++){
+		
+		//nextstate is a 2D array
+		nextState[i] = getNextState( currentStates[i], inputList[s] ); 
+		if( nextState[i] == null ){
+			alert("Failure, no transition found");
+			if(newInput){setAcceptedForInput(AcceptedForInput.NOTACCEPTED);}
+			return AcceptedForInput.NOTACCEPTED;
+		}
 	}
 	
+	prevState = currentStates;
+	var g = 0; // counter for currentStates
+	
+	//for every array of states in nextState
+	for(i=0;i<nextState.length;i++){
+		
+		//for every state in nextState[i]
+		for(j=0;j<nextState[i].length;j++){
+			currentStates[g] = nextState[i][j];
+			g++;
+		}
+	}
 	// reset states
-	prevState = currentState;
-	currentState = nextState;
 	nextState = null;
 }
 
