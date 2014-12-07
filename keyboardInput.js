@@ -6,10 +6,12 @@ var lastKeyCode = "X";			//variable to track the last key pressed
 // Called on key press
 $(document).ready(function(){
   $(this).keydown(function(e){
-    lastKeyCode = String.fromCharCode(e.keyCode);		// Changes lastKeyCode
 	// DEBUG
     // console.log("Keycode set to " + lastKeyCode);
-    changeSelectedStateLabel();							// Changes the Label of the selected state
+    if(e.keyCode !== 38 && e.keyCode !== 40) {
+        lastKeyCode = String.fromCharCode(e.keyCode);		// Changes lastKeyCode
+        changeSelectedStateLabel();							// Changes the Label of the selected state
+    }
   });
   $("input").keyup(function(){
   });
