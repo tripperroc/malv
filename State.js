@@ -116,6 +116,17 @@ function addTransition( transition ){
 	this.tranList.push(transition);	
 }
 
+/**
+ * addNFATransition:
+ * 	Adds transitions for the NFA
+**/
+function addNFATransition( transition ){
+	// hook up end state to transition
+	this.transitions[transition.character] = transition.endState;
+
+	this.tranList.push(transition);
+}
+
 function addTuringTransition( transition ){
 	if( !(Alphabet.indexOf(transition.character) > -1 ) ){
 		return;
