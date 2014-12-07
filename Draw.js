@@ -36,10 +36,10 @@ function recursiveLine(midX, midY,radius){
 }
 
 // will draw a curved Line
-function originalCurvedLine(startX, startY, endX, endY){
+function originalCurvedLine(startX, startY, endX, endY,scaling){
 
 	
-	diffArray = calcDiff(startX,startY,endX,endY);
+	diffArray = calcDiff(startX,startY,endX,endY,scaling);
 	yDiff = diffArray[1];
 	xDiff = diffArray[0];
 	var controlPoints = new Array(); //bezierCurveTo([0],[1],[2],[3],endX,endY); after the first moveTo(startX,startY)
@@ -89,7 +89,7 @@ function curvedLine(startX,startY,controlPoints,endX,endY){
 	ctx.stroke();
 }
 
-function calcDiff(startX,startY,endX,endY){
+function calcDiff(startX,startY,endX,endY,scaling){
 	a = startX - endX;
 	b = startY - endY;
 	
@@ -104,8 +104,8 @@ function calcDiff(startX,startY,endX,endY){
 		diffDist  = (endX-startX)/10;
 	}
 
-	yDiff = (1.7-calc)*diffDist; // x distance from end points to two control points
-	xDiff = calc*diffDist; // y distance from end points to two control points
+	yDiff = (1.7-calc)*diffDist*scaling; // x distance from end points to two control points
+	xDiff = calc*diffDist*scaling; // y distance from end points to two control points
 	return [xDiff,yDiff];
 }
 

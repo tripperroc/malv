@@ -5,6 +5,8 @@
  // Transition Constructor
 function Transition(_beginState, _endState){
 	// Vars
+    this.splineSize = 1;                            //The scaling factor for the splines
+
 	this.character = lastKeyCode;					// Transitions 'Key'
 	
 	this.midX = (_beginState.x + _endState.x)/2;	// Midpoint of transition
@@ -70,7 +72,7 @@ function transitionDisplay(){
 
 	// Draw transition if it is between to different states
 	if(this.startState != this.endState){
-		diffArray = originalCurvedLine(this.startState.x, this.startState.y,this.endState.x,this.endState.y);
+		diffArray = originalCurvedLine(this.startState.x, this.startState.y,this.endState.x,this.endState.y,this.splineSize);
 		
 		ctx.font="15px Georgia";		
 		this.drawArrow( diffArray[0], diffArray[1] );
