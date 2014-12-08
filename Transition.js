@@ -129,30 +129,30 @@ function drawArrow( diffX, diffY ){
 	else{
 		arrowLabel = this.character;
 	}
-	
 	if(this.endState.x < this.startState.x){ // end point is to the left of the start point
 		if(this.endState.y > this.startState.y){ // end point is under start point
 			pointX = this.midX - diffX/1.4;
 			pointY = this.midY - diffY/1.4;			
-			ctx.fillText(arrowLabel,pointX-diffX,pointY-diffY+textoffset);
+			ctx.fillText(arrowLabel,this.midX-diffX,this.midY-diffY+textoffset);
 		}
 		else{ // end point is above start point
 			pointX = this.midX - diffX/1.4;
 			pointY = this.midY + diffY/1.4;
-			ctx.fillText(arrowLabel,pointX-diffX,pointY+diffY+textoffset);
+			ctx.fillText(arrowLabel,this.midX-diffX,this.midY+diffY+textoffset);
 		}
 	}else{ // end point is to the right of the start point *
 		if(this.endState.y > this.startState.y){ // end point is under start point			
 			pointX = this.midX - diffX/1.4;
 			pointY = this.midY + diffY/1.4;
-			ctx.fillText(arrowLabel,pointX-diffX,pointY+diffY+textoffset);
+			ctx.fillText(arrowLabel,this.midX-diffX,this.midY+diffY+textoffset);
 		}
 		else{ // end point is above start point
 			pointX = this.midX + diffX/1.4;
 			pointY = this.midY + diffY/1.4;
-			ctx.fillText(arrowLabel,pointX+diffX,pointY+diffY+textoffset);
+			ctx.fillText(arrowLabel,this.midX+diffX,this.midY+diffY+textoffset);
 		}
 	}
+
 	this.entX = pointX;	
 	this.entY = pointY;
 	
