@@ -32,7 +32,22 @@
 	<div id="stringTextWrapper">
 		<textarea id="stringText"></textarea>	
 	</div>
-	<br></br>
+    
+    <h4>Regular Expression Converter</h4>
+    <p>Vaild regular expressions may include :
+    <ul>
+    <li>TODO - uppercase and lowercase letters</li>
+    <li>TODO - numbers</li>
+    <li>TODO - grouping with ()</li>
+    <li>TODO - alternation with |</li>
+    <li>TODO - Kleene star with *</li>
+    </ul></p>
+    <p>
+    <input type="text" value="" id="regexInput" size="50" style="font-size:12px; padding-left:2px;"></input>
+    <input type="button" value="Convert RE" onclick="regexToNFA( $('#regexInput').val() )"></input>
+    </div>
+    </p>
+    <br />
 	
 	<input type="image" id="play_btn" src="Images/play_btn.png"  
 	onmouseover="this.src='Images/play_btn.png'" 
@@ -108,6 +123,7 @@
 <script src="Update.js"></script>
 <script src="Mouse.js"></script>
 <script src="Files.js"></script>
+<script src="regexToNFA.js"></script>
 
 </body>
 </html> 
