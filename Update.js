@@ -26,7 +26,7 @@ function update(){
 		displayInputs(input,false);
 		for(var i=0; i<Qstates.length; i++){
 			Qstates[i].display();
-		}		
+		}
 	}
 	
 	// Set the selected transitions attributes to those in the text boxes
