@@ -162,7 +162,7 @@ function readInputAnimated(input){
 					return;
 				}
 			}
-			alert("Not accepted, \n finished  in state" + currentState.label);
+			alert("Not accepted, \n finished  in state" + currentStates[i].label);
 					setAcceptedForInput(AcceptedForInput.NOTACCEPTED);
 					animating = false; // updates can start drawing again
 					return;
