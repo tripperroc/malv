@@ -28,7 +28,7 @@ var alerts = true; // this boolean will turn on and off alerts because the annoy
 
 // s is an index in the input string, newInput is if it hasn't been proceessed before	
 function step(s,newInput){
-	
+	nextState = [];
 	// get all the next states from all the current states with next character
 	for( i = 0; i < currentStates.length; i++){
 		
