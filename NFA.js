@@ -63,9 +63,9 @@ function step(s,newInput){
 				newCurrentStates.push(nextState[x][y]);
 				
 				if(nextState[x][y].transitions[EPSILON_VAL] ! = null){
-					for(z = 0; z < nextState[x][y].transitions[EPSILON_VAL].length; z++){
-						newCurrentStates.push(nextState[x][y].transitions['\u03B5'][z]);
-					}
+					//for(z = 0; z < nextState[x][y].transitions[EPSILON_VAL].length; z++){
+						newCurrentStates.push(nextState[x][y].transitions['\u03B5'][0]);
+					//}
 				}
 			}
 		}
