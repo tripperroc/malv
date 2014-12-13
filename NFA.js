@@ -39,7 +39,13 @@ function step(s,newInput){
 		}
 	}
 	
-	if(nextState.length == 0 ){
+	var empty = true;
+	for( i = 0; i < nextState.length; i++){
+		if(nextState[i].length != 0)
+			empty = false;
+	}
+	
+	if(empty){
 		alert("Failure, no transition found");
 		if(newInput){setAcceptedForInput(AcceptedForInput.NOTACCEPTED);}
 			return AcceptedForInput.NOTACCEPTED;
