@@ -155,8 +155,8 @@ function readInputAnimated(input){
 		
 		if(animatedInput  == inputList.length){ // at the end of the input list
 		
-			for( i = 0; i < currentStates.length; i++){
-				if( $.inArray(currentStates[i], FStates) != -1 ){
+			for( k = 0; k < currentStates.length; k++){
+				if( $.inArray(currentStates[k], FStates) != -1 ){
 					
 					alert("Machine completed in accept State");
 					
@@ -165,7 +165,7 @@ function readInputAnimated(input){
 					return;
 				}
 			}
-			alert("Not accepted, \n finished  in state" + currentStates[i].label);
+			alert("Not accepted, \n finished  in state" + currentStates[k].label);
 					setAcceptedForInput(AcceptedForInput.NOTACCEPTED);
 					animating = false; // updates can start drawing again
 					return;
