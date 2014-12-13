@@ -35,10 +35,21 @@ function step(s,newInput){
 		//nextstate is a 2D array
 		nextState[i] = getNextState( currentStates[i], inputList[s] ); 
 		if( nextState[i] == null ){
-			alert("Failure, no transition found");
-			if(newInput){setAcceptedForInput(AcceptedForInput.NOTACCEPTED);}
-			return AcceptedForInput.NOTACCEPTED;
+			nextState.splice(i,1);
 		}
+	}
+	var x = true;
+	for(i=0; i< nextState.length; i++){
+		for(j=0;j<nextState[i].length; j++){
+			if(nextState[i][j] !=null){
+				x = false;
+			}
+		}
+	}
+	if( x ){
+		alert("Failure, no transition found");
+		if(newInput){setAcceptedForInput(AcceptedForInput.NOTACCEPTED);}
+			return AcceptedForInput.NOTACCEPTED;
 	}
 	
 	prevState = currentStates;
