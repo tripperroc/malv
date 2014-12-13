@@ -52,19 +52,17 @@ function step(s,newInput){
 	}
 	
 	prevState = currentStates;
-	var g = 0; // counter for currentStates
 	
+	var newCurrentStates = new Array();
 	//for every array of states in nextState
 	for(x=0;x<nextState.length;x++){
 		
 		//for every state in nextState[i]
 		if(nextState[x] != null){
-			for(y=0;y<nextState[x].length;y++){
-				currentStates[g] = nextState[x][y];
-				g++;
-			}
+			newCurrentStates.push(nextState[x]);	
 		}
 	}
+	currentStates = newCurrentStates;
 	// reset states
 	nextState = null;
 }
