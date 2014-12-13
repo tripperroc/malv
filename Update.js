@@ -8,6 +8,8 @@
 var drawingTran = false;		// If a transition is being created
 var pm = PlacementMode.STATE;	// The placement mode
 var animating = false;			// If the application is animating the current machine
+// Constant, the unicode representation of Epsilon
+var EPSILON_VAL = '\u03B5';
 
 // Called at a set interval
 function update(){
@@ -37,9 +39,19 @@ function update(){
 	}
 
 	// Draw a line simulating the transition being created
-	if( drawingTran == true && clickedState != null && pm == PlacementMode.TRANSITION ){
+	if( drawingTran == true && clickedState != null && ((pm == PlacementMode.TRANSITION) || (pm = PlacementMode.EPSILON_TRANSITION)) ){
+		//If we are drawing a regular transition, show a transition line with
+		//no text
+		if(pm == PlacementMode.TRANSITION){
+			fillTextStr = "";
+		}
+		//Else we're drawing an epsilon transition, show the epsilon character
+		else{
+			fillTextStr = EPSILON_VAL;
+		}
+
 		line(clickedState.x, clickedState.y, mouseX, mouseY+$(window).scrollTop(), ctx);
-		ctx.fillText(lastKeyCode,mouseX,mouseY+ $(window).scrollTop());
+		ctx.fillText(fillTextStr,mouseX,mouseY+ $(window).scrollTop());
 	}
 }
 
