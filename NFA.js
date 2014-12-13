@@ -61,7 +61,12 @@ function step(s,newInput){
 		if(nextState[x] != null){
 			for(y=0;y<nextState[x].length;y++){
 				newCurrentStates.push(nextState[x][y]);
-				//g++;
+				
+				if(nextState[x][y].transitions[EPSILON_VAL] ! = null){
+					for(z = 0; z < nextState[x][y].transitions[EPSILON_VAL].length; z++){
+						newCurrentStates.push(nextState[x][y].transitions[EPSILON_VAL][z]);
+					}
+				}
 			}
 		}
 	}
