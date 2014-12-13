@@ -62,11 +62,11 @@ function step(s,newInput){
 			for(y=0;y<nextState[x].length;y++){
 				newCurrentStates.push(nextState[x][y]);
 				
-			/*	if(nextState[x][y].transitions[EPSILON_VAL] ! = null){
+				if(nextState[x][y].transitions[EPSILON_VAL] ! = null){
 					for(z = 0; z < nextState[x][y].transitions[EPSILON_VAL].length; z++){
-						newCurrentStates.push(nextState[x][y].transitions[EPSILON_VAL][z]);
+						newCurrentStates.push(nextState[x][y].transitions['\u03B5'][z]);
 					}
-				}*/
+				}
 			}
 		}
 	}
