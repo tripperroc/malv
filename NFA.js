@@ -58,9 +58,11 @@ function step(s,newInput){
 	for(x=0;x<nextState.length;x++){
 		
 		//for every state in nextState[i]
-		for(y=0;y<nextState[x].length;y++){
-			currentStates[g] = nextState[x][y];
-			g++;
+		if(nextState[x] != null){
+			for(y=0;y<nextState[x].length;y++){
+				currentStates[g] = nextState[x][y];
+				g++;
+			}
 		}
 	}
 	// reset states
