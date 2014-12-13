@@ -40,8 +40,8 @@ function step(s,newInput){
 	}
 	
 	var empty = true;
-	for( i = 0; i < nextState.length; i++){
-		if(nextState[i].length != 0)
+	for( n = 0; n < nextState.length; n++){
+		if(nextState[n].length != 0)
 			empty = false;
 	}
 	
@@ -55,11 +55,11 @@ function step(s,newInput){
 	var g = 0; // counter for currentStates
 	
 	//for every array of states in nextState
-	for(i=0;i<nextState.length;i++){
+	for(x=0;i<nextState.length;i++){
 		
 		//for every state in nextState[i]
-		for(j=0;j<nextState[i].length;j++){
-			currentStates[g] = nextState[i][j];
+		for(y=0;y<nextState[x].length;j++){
+			currentStates[g] = nextState[x][y];
 			g++;
 		}
 	}
