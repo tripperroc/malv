@@ -41,7 +41,7 @@ function step(s,newInput){
 	
 	var empty = true;
 	for( n = 0; n < nextState.length; n++){
-		if(nextState[n] == null)
+		if(nextState[n] != null)
 			empty = false;
 	}
 	
