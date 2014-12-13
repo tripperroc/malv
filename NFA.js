@@ -19,6 +19,8 @@ var FStates     = [];
 var currentStates = [];
 var prevStates = [];
 
+//fail
+var fail = false;
 
 var boxInput = "";
 var error = "";
@@ -47,8 +49,10 @@ function step(s,newInput){
 	
 	if(empty){
 		alert("Failure, no transition found");
-		if(newInput){setAcceptedForInput(AcceptedForInput.NOTACCEPTED);}
-			return AcceptedForInput.NOTACCEPTED;
+		inputList = inputList.splice(s, inputList.length-s);
+		fail = true;
+		setAcceptedForInput(AcceptedForInput.NOTACCEPTED);
+		return AcceptedForInput.NOTACCEPTED;
 	}
 	
 	prevState = currentStates;
@@ -75,12 +79,12 @@ function step(s,newInput){
 	nextState = null;
 }
 
-//TODO: Edit to search all branches of the NFA
+
 function isAccepted(input,newInput){
 	curstates = "";
 	for(i=0; i < currentStates.length; i++){
 		// if machine ends in accept state
-		if( $.inArray(currentStates[i], FStates) != -1 ){
+		if( ($.inArray(currentStates[i], FStates) != -1) ){
 			alert("Machine completed in accept " + currentStates[i].label + " State for string " + input);
 			if(newInput){setAcceptedForInput(AcceptedForInput.ACCEPTED);}
 			return AcceptedForInput.ACCEPTED;
@@ -161,23 +165,29 @@ function readInputAnimated(input){
 		if(animatedInput  == inputList.length){ // at the end of the input list
 		
 			for( k = 0; k < currentStates.length; k++){
-				if( $.inArray(currentStates[k], FStates) != -1 ){
+				if( $.inArray(currentStates[k], FStates) != -1 && !fail){
 					
 					alert("Machine completed in accept State");
 					
 					setAcceptedForInput(AcceptedForInput.ACCEPTED);
 					animating = false; // updates can start drawing again
+					fail = false;
 					return;
 				}
 			}
 			alert("Not accepted, \n finished  in state " + currentStates[k-1].label);
 					setAcceptedForInput(AcceptedForInput.NOTACCEPTED);
 					animating = false; // updates can start drawing again
+					fail = false;
 					return;
 		}
 		
 		// step with current input
-		step(animatedInput,false);
+		if(step(animatedInput,false) == AcceptedForInput.NOTACCEPTED){
+			alert("Not accepted, \n finished  in state " + currentStates[k-1].label);
+			fail = false;
+			return;
+		}
 		animatedInput++;
 		// calls readInputAnimated, replaces for loop
 		requestAnimationFrame(readInputAnimated); // basic recursion 
