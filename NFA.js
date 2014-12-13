@@ -38,15 +38,8 @@ function step(s,newInput){
 			nextState.splice(i,1);
 		}
 	}
-	var x = true;
-	for(i=0; i< nextState.length; i++){
-		for(j=0;j<nextState[i].length; j++){
-			if(nextState[i][j] !=null){
-				x = false;
-			}
-		}
-	}
-	if( x ){
+	
+	if(nextState.length == 0 ){
 		alert("Failure, no transition found");
 		if(newInput){setAcceptedForInput(AcceptedForInput.NOTACCEPTED);}
 			return AcceptedForInput.NOTACCEPTED;
