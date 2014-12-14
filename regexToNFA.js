@@ -12,10 +12,7 @@ var stateCount = 0;
 var EPS = '\u03B5'; // Unicode for the epsilon character.
 
 var head, tail;             // Storage for the current start and end nodes for the NFA.
-var kleeneSkip, kleeneHead, kleeneTail; // Storage for start and end nodes within a Kleene star section.
-var splitHead, splitTail;   // Storage for start and end nodes when selecting from branches.
-var currentTransition;      // Used to create temporary transitions.
-
+var isCreating = false;
 /* 
  * Main function for the solver.
  * Takes an input string and reads through each character,
@@ -33,10 +30,9 @@ function regexToNFA( input ){
     head = null;
     tail = null;
     
-    this.currentChar = ''; // Stores transition character.
-    this.isCreating = false;  
-    this.inKleeneStar = false; // Currently unused.
-    this.inGroup = false;      // Currently unused.
+    var currentChar = ''; // Stores transition character.
+    var tempLeft = null;
+    var tempRight = null;
 
     resetMachine();
     
@@ -51,9 +47,47 @@ function regexToNFA( input ){
             // read first character from input
             currentChar = input.charAt(0);
             if( /[a-zA-Z0-9]/.test(currentChar) ){
-                // pop first character and make a transition
-                input = input.substr(1);
-                attachCharacter( currentChar );
+                
+                if( scanRightOne(input) == null || /[a-zA-Z0-9()]/.test( scanRightOne(input) ) ){
+                    // pop first character and make a transition
+                    input = input.substr(1);
+                    
+                    // Create 2 new states
+                    tempLeft = createNewState();
+                    tempRight = createNewState();
+    
+                    // Create new transition
+                    lastKeyCode = currentChar;
+                    makeNewTran(tempLeft, tempRight);
+    
+                    // Set the head and tail as needed
+                    if( head == null ){
+                        head = tempLeft;
+                    }
+                    if( tail != null ){
+                        lastKeyCode = EPS;
+                        makeNewTran(tail, tempLeft);
+                    }
+                    tail = tempRight;
+                    
+                } else if( /\*/.test( scanRightOne( input ) ) ){
+                
+                    input = input.substr(2);
+                    // Create Kleene star section
+                    var tempKleeneStates = attachKleeneStar( currentChar );
+                    
+                    // link with main list
+                    if( head == null ){
+                        head = tempKleeneStates[0];
+                    } 
+                    if( tail != null ){
+                        lastKeyCode = EPS;
+                        makeNewTran(tail, tempKleeneStates[0]);
+                    }
+                    tail = tempKleeneStates[1];
+                    
+                }
+            
             } else {
                 // Machine is invalid.
                 isCreating = false;
@@ -77,6 +111,15 @@ function regexToNFA( input ){
     
 }
 
+/* Checks the second character of the current input string. */
+function scanRightOne( input ){
+    if( input.length >= 2 ){
+        return input.charAt(1);
+    } else {
+        return null;
+    }
+}
+
 /* Clears the machine in case the regular expression is invalid. */
 function resetMachine(){
     Qstates = [];
@@ -84,58 +127,109 @@ function resetMachine(){
     FStates = [];
 }
 
-/* 
- * Connects a single character in the NFA. 
- * Will work alone, inside a branch, or inside a Kleene star loop.
- */
-function attachCharacter( input ){
+/* Creates a new state to use in the machine. */
+function createNewState(){
+    stateCount++;
+    shiftRight();
+    this.tempState = new State( nextX, nextY, stateCount );
+    Qstates.push( tempState );
+    clearAccepted();
+    
+    return tempState;
+}
 
-    // Create 2 new states
-    stateCount++;
-    shiftRight();
-    this.tempLeft = new State( nextX, nextY, stateCount );
-    Qstates.push( tempLeft );
-    clearAccepted();
+function attachKleeneStar( input ){
+
+    var currentChar = '';
+    var isLooping = true;
+
+    // Create 2 new (framework) states
+    var tempFirst = createNewState();
+    var tempHead = createNewState();
     
-    stateCount++;
-    shiftRight();
-    this.tempRight = new State( nextX, nextY, stateCount );
-    Qstates.push( tempRight );
-    clearAccepted();
+    // Placeholders for states to follow
+    var tempTail = null;
+    var tempLeft = null;
+    var tempRight = null;
     
-    // Create new transitions
-    lastKeyCode = input;
-    makeNewTran(tempLeft, tempRight);
+    // Link together
+    lastKeyCode = EPS;
+    makeNewTran(tempFirst, tempHead);
     
-    // Set the head and tail as needed
-    if( head == null ){
-        head = tempLeft;
+    // TODO - Link center
+    while( isLooping ){
+    
+        // read first character from input
+        currentChar = input.charAt(0);
+        if( /[a-zA-Z0-9]/.test(currentChar) ){
+                
+            if( scanRightOne(input) == null || /[a-zA-Z0-9()]/.test( scanRightOne(input) ) ){
+                // pop first character and make a transition
+                input = input.substr(1);
+                    
+                tempLeft = createNewState();
+                lastKeyCode = EPS;
+                
+                // link first state to end of current chain
+                if( tempRight != null ){
+                    makeNewTran(tempRight, tempLeft);
+                } else {
+                    makeNewTran(tempHead, tempLeft);
+                }
+                
+                tempRight = createNewState();
+    
+                // link second state to end of current chain
+                lastKeyCode = currentChar;
+                makeNewTran(tempLeft, tempRight);
+    
+                // Set the tail as needed
+                if( tempTail != null ){
+                    lastKeyCode = EPS;
+                    makeNewTran(tempTail, tempLeft);
+                }
+                tempTail = tempRight;  
+            
+            } 
+            
+        } else {
+                // Machine is invalid.
+                isCreating = false;
+                isLooping = false;
+                resetMachine();
+        }
+        
+        if( input.length == 0 ){
+            isLooping = false;
+        }
+        
     }
-    if( tail != null ){
-        lastKeyCode = EPS;
-        makeNewTran(tail, tempLeft);
-    }
-    tail = tempRight;
+    
+    // Link connecting loop
+    lastKeyCode = EPS;
+    makeNewTran(tempFirst, tempTail);
+    lastKeyCode = EPS;
+    makeNewTran(tempTail, tempHead);
+    
+    tail = tempTail;
+    
+    return [tempFirst, tempTail];
     
 }
 
 /* Used on the finished NFA to connect the initial and final states. */
 function attachEnds(){
     
-    // Create start state
-    this.tempBegin = new State( 75, 100, '0' );
-    
-    // Create end state
-    shiftRight();
-    stateCount++;
-    this.tempEnd = new State( nextX, nextY, stateCount );
+    // Create start and end states
+    var tempBegin = new State( 75, 100, '0' );
+    var tempEnd = createNewState();
     Qstates.push(tempBegin);
-    Qstates.push(tempEnd);
     
     // Link start and end to head and tail, respectively
     lastKeyCode = EPS;
     makeNewTran(tempBegin, head);
     lastKeyCode = EPS;
+    makeNewTran(tail, tempEnd);
     
     // Relink the list (not necessary but more readable)
     head = tempBegin;
