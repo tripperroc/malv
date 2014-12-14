@@ -79,7 +79,7 @@ function regexToNFA( input ){
                     // link with main list
                     if( head == null ){
                         head = tempKleeneStates[0];
-                    } 
+                    }
                     if( tail != null ){
                         lastKeyCode = EPS;
                         makeNewTran(tail, tempKleeneStates[0]);
@@ -206,14 +206,16 @@ function attachKleeneStar( input ){
     }
     
     // Link connecting loop
-    lastKeyCode = EPS;
-    makeNewTran(tempFirst, tempTail);
-    lastKeyCode = EPS;
-    makeNewTran(tempTail, tempHead);
     
-    tail = tempTail;
+    var tempLast = createNewState();
+    lastKeyCode = EPS;
+    makeNewTran(tempTail, tempLast);
+    lastKeyCode = EPS;
+    makeNewTran(tempFirst, tempLast);
+    lastKeyCode = EPS;
+    makeNewTran(tempLast, tempHead);
     
-    return [tempFirst, tempTail];
+    return [tempFirst, tempLast];
     
 }
 
