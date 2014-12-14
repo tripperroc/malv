@@ -110,6 +110,11 @@ function readInput(input,newInput){
 	
 	// set up initial states
 	currentStates[0] = Qzero;
+	if(Qzero.transitions[EPSILON_VAL] != null){
+		for(f = 0; f < Qzero.transitions[EPSILON_VAL].length; f++){
+			currentStates.push(Qzero.transitions[EPSILON_VAL][f]);
+		}
+	}
 	prevStates = null;
 	nextState = null;
 	inputList = input.split("");
@@ -228,6 +233,11 @@ function debugInput(){
 	
 	// set up states
 	currentStates[0] = Qzero;
+	if(Qzero.transitions[EPSILON_VAL] != null){
+		for(h = 0; h < Qzero.transitions[EPSILON_VAL].length; h++){
+			currentStates.push(Qzero.transitions[EPSILON_VAL][h]);
+		}
+	}
 	prevStates = null;
 	nextState = null;
 	inputList = input.split("");
