@@ -368,20 +368,195 @@ PDA.prototype.loadPDA = function(s){
     
 };
 
-var m = new PDA();
+//Clears the current run of the PDA
+PDA.prototype.restart = function(){
+    this.current = [[this.start,[]]];
+}
 
-m.addTransition('q','_','_','r','$');
-m.addTransition('r','a','_','r','a');
-m.addTransition('r','_','_','s','_');
-m.addTransition('s','b','a','s','_');
-m.addTransition('s','_','$','t','_');
-m.setAccept('t');
+//Returns a set of state/stack pairs given from applying the character c to it
+PDA.prototype.step = function(s,c){
+    var res = [];
+    var stack = s[1].slice(0).pop();
+    if(this.states.hasOwnProperty(s[0])){
+        if(this.states[s[0]].hasOwnProperty(c)){
+            if(this.states[s[0]][c].hasOwnProperty(this.EPSILON)){
+                for(var i=0;i<this.states[s[0]][c][this.EPSILON].length;i++){
+                    var q = this.states[s[0]][c][this.EPSILON][i];
+                    var t = s[1].slice(0);
+                    if(q[1]!=this.EPSILON)
+                        t.push(q[1])
+                    res.push([q[0],t]);
+                }
+            }
+            if(typeof stack !== 'undefined'){
+                if(this.states[s[0]][c].hasOwnProperty(stack)){
+                    for(var i=0;i<this.states[s[0]][c][stack].length;i++){
+                        var q = this.states[s[0]][c][stack][i];
+                        var t = s[1].slice(0)
+                        t.pop();
+                        if(q[1]!=this.EPSILON)
+                            t.push(q[1])
+                        res.push([q[0],t]);
+                    }
+                }
+            }
+        }
+    }
+    return res;
+};
 
-var s = m.serialize();
+//Helper function, returns true if the state stack pair p is NOT in the array a
+function ssUnique(a,p){
+    for(var i = 0; i < a.length; i++){
+        if(a[i][0]==p[0]){
+            if(a[i][1].length == p[1].length){
+                var t = true;
+                for(var j = 0; j < p[1].length; j++){
+                    if(a[i][1][j]!=p[1][j]){
+                        t=false;
+                        break;
+                    }
+                }
+                if(t)
+                    return false;
+            }
+        }
+    }
+    return true;
+}
 
-var m2 = new PDA();
+//Steps through every nondeterministic state by reading character c
+PDA.prototype.readChar = function(c){
+    var next = [];
+    if(c==this.EPSILON){
+        for(var i = 0; i < this.current.length; i++){
+            next.push(this.current[i].slice(0));
+        }
+    }
+    for(var i = 0; i < this.current.length; i++){
+        var r = this.step(this.current[i],c);
+        for(var j = 0; j < r.length; j++){
+            if(ssUnique(next,r[j]))
+                next.push([r[j][0],r[j][1].slice(0)]);
+        }
+    }
+    this.current = next;
+};
 
-m2.loadPDA(s);
+//Reads the string and returns true if the PDA accepts
+//Fails if the PDA requires more than 10 epsilon transitions before reading in a new character.
+//This will fail if restart() has yet to be called
+PDA.prototype.readString = function(s){
+    for(var i in s){
+        var l = this.current.length;
+        var r = 10;
+        while(r>0){
+            this.readChar(this.EPSILON);
+            
+            //Pause here if you want to show each consequtive epsilon transition seperately
+            
+            var n = this.current.length;
+            if(l==n)
+                break;
+            r--;
+            l=n;
+        }
+        if(r==0){
+            //There might be an infinite loop of transitions that neighter consume input nor stack character
+        }
+        
+        //Pause in execution here if you want to show step by step
+        
+        this.readChar(s[i]);
+        
+        //Or here. Or both if you want epsilon transitions to register seperately
+        
+    }
+    
+    var l = this.current.length;
+    var r = 10;
+    while(r>0){
+        this.readChar(this.EPSILON);
+        
+        //Pause here if you want to show each consequtive epsilon transition seperately
+        
+        var n = this.current.length;
+        if(l==n)
+            break;
+        r--;
+        l=n;
+    }
+    if(r==0){
+        //There might be an infinite loop of transitions that neighter consume input nor stack character
+    }
+    
+    for(var i = 0; i < this.current.length; i++){
+        if(this.accept.indexOf(this.current[i][0]) != -1)
+            return true;
+    }
+    return false;
+};
 
-console.log(m.getDelta());
-console.log(m2.getDelta());
+//Accepts is functionally identical to readString except that it refreshes the PDA state before running.
+//m.readString('aa');m.readString('bb') will give the same result as m.readString('aabb'),
+//but m.accepts('aa');m.accepts('bb') will not give the same resutl as m.accepts('aabb')
+//accepts can be called without invoking m.restart
+PDA.prototype.accepts = function(s){
+    this.restart();
+    return this.readString(s);
+};
+
+
+//Test code
+//The PDA for the language {a^(i)b^(i) | i>=0} and some test cases
+
+test();
+
+function test(){
+    var m = new PDA();
+    
+    m.addTransition('q','_','_','r','$');
+    m.addTransition('r','a','_','r','a');
+    m.addTransition('r','_','_','s','_');
+    m.addTransition('s','b','a','s','_');
+    m.addTransition('s','_','$','t','_');
+    m.setAccept('t');
+    
+    //Formal definition functions
+    console.log("(Q,Sigma,Gamma,delta,q0,F)");
+    console.log("Q = {"+m.getStates()+"}");
+    console.log("Sigma = {"+m.getSigma()+"}");
+    console.log("Gamma = {"+m.getGamma()+"}");
+    console.log("delta = {"+m.getDelta()+"}");
+    console.log("q0 = "+m.getStart());
+    console.log("F = {"+m.getAccept()+"}");
+    
+    
+    console.log('--------------------------------------------------------'+
+                '--------------------------------------------------------');
+    
+    
+    //String to store on the server for this machine
+    var s = m.serialize();
+    console.log("Serial form = {[epsilon][start state][transitions (state,input,stackIn) -> (state,stackOut)][accepting]}");
+    console.log("Serial form = "+s);
+    
+    //Loading the string into a new machine
+    var m2 = new PDA();
+    m2.loadPDA(s);
+    
+    
+    console.log('--------------------------------------------------------'+
+                '--------------------------------------------------------');
+    
+    
+    //Running the machine
+    console.log("'aaaabbbb' = "+m2.accepts('aaaabbbb'));
+    console.log("'aaab' = "+m2.accepts('aaab'));
+    console.log("'abbb' = "+m2.accepts('abbb'));
+    console.log("'ba' = "+m2.accepts('ba'));
+    console.log("'' = "+m2.accepts(''));
+    console.log("'abab' = "+m2.accepts('abab'));
+    console.log("'aabb' = "+m2.accepts('aabb'));
+
+}
