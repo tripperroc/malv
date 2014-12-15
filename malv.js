@@ -1,19 +1,30 @@
 if (Meteor.isClient) {
-  // counter starts at 0
-  Session.setDefault("counter", 0);
-
-  Template.hello.helpers({
-    counter: function () {
-      return Session.get("counter");
-    }
+  Meteor.startup(function(){
+    Session.set("operation", "showIndex");
   });
+  Template.index.showIndex = function(){
+    return Session.get("operation") == "showIndex";
+  }
+  Template.main.showMain = function(){
+    return Session.get("operation") == "showMain";
+  }
+  Template.turing.showTuring = function(){
+    return Session.get("operation") == "showTuring";
+  }
+  
+  
+}
 
-  Template.hello.events({
-    'click button': function () {
-      // increment the counter when button is clicked
-      Session.set("counter", Session.get("counter") + 1);
-    }
-  });
+toIndex = function(){
+  Session.set("operation", "showIndex");
+}
+toMain = function(){
+  console.log("to main");
+  Session.set("operation", "showMain");
+}
+toTuring = function(){
+  console.log("to turing");
+  Session.set("operation", "showTuring");
 }
 
 if (Meteor.isServer) {
@@ -21,3 +32,4 @@ if (Meteor.isServer) {
     // code to run on server at startup
   });
 }
+
