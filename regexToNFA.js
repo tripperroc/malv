@@ -36,7 +36,7 @@ function regexToNFA( input ){
 
     resetMachine();
     
-    if( ! /[a-zA-Z0-9|*()]+/.test(input) ){
+    if( ! /[a-zA-Z0-9\|*()]+/.test(input) ){
         // Input contains invalid characters
         alert("Invalid input.");
     } else {
@@ -48,7 +48,7 @@ function regexToNFA( input ){
             currentChar = input.charAt(0);
             if( /[a-zA-Z0-9]/.test(currentChar) ){
                 
-                if( scanRightOne(input) == null || /[a-zA-Z0-9()]/.test( scanRightOne(input) ) ){
+                if( scanRightOne(input) == null || /[a-zA-Z0-9()\|]/.test( scanRightOne(input) ) ){
                     // pop first character and make a transition
                     input = input.substr(1);
                     
@@ -87,6 +87,24 @@ function regexToNFA( input ){
                     tail = tempKleeneStates[1];
                     
                 }
+                    
+            } else if( /\|/.test( currentChar ) ){
+                    
+                    // Create branch section
+                    var tempBranch = attachBranch( input.substr(1) );
+                    input = input.substr( input.length ); // This branches the entire string.
+                    
+                    // link with main list
+                    if( head != null ){
+                        lastKeyCode = EPS;
+                        makeNewTran(tempBranch[0], head);
+                    }
+                    if( tail != null ){
+                        lastKeyCode = EPS;
+                        makeNewTran(tail, tempBranch[1]);
+                    }
+                    head = tempBranch[0];
+                    tail = tempBranch[1];
             
             } else {
                 // Machine is invalid.
@@ -145,6 +163,7 @@ function attachKleeneStar( input ){
 
     // Create 2 new (framework) states
     var tempFirst = createNewState();
+    returnToLeft();
     var tempHead = createNewState();
     
     // Placeholders for states to follow
@@ -163,7 +182,7 @@ function attachKleeneStar( input ){
         currentChar = input.charAt(0);
         if( /[a-zA-Z0-9]/.test(currentChar) ){
                 
-            if( scanRightOne(input) == null || /[a-zA-Z0-9()]/.test( scanRightOne(input) ) ){
+            if( scanRightOne(input) == null || /[a-zA-Z0-9()\|]/.test( scanRightOne(input) ) ){
                 // pop first character and make a transition
                 input = input.substr(1);
                     
@@ -217,6 +236,105 @@ function attachKleeneStar( input ){
     
     return [tempFirst, tempLast];
     
+}
+
+function attachBranch( input ){
+
+    var currentChar = '';
+    var isLooping = true;
+
+    // Create new framework states
+    var tempFirst = createNewState();
+    returnToLeft();
+    var tempLast = createNewState();
+    
+    // Placeholders for states to follow
+    var tempLeft = null;
+    var tempRight = null;
+    
+    // TODO - Link center
+    while( isLooping ){
+    
+        // read first character from input
+        currentChar = input.charAt(0);
+        if( /[a-zA-Z0-9]/.test(currentChar) ){
+                
+            if( scanRightOne(input) == null || /[a-zA-Z0-9()\|]/.test( scanRightOne(input) ) ){
+                // pop first character and make a transition
+                input = input.substr(1);
+                
+                if( tempLeft == null ){
+                    tempLeft = createNewState();
+                    lastKeyCode = EPS;
+                    makeNewTran(tempFirst, tempLeft);
+                } else {
+                    tempLeft = createNewState();
+                }
+                
+                lastKeyCode = EPS;
+                
+                // link first state to end of current chain
+                if( tempRight != null ){
+                    makeNewTran(tempRight, tempLeft);
+                }
+                
+                tempRight = createNewState();
+    
+                // link second state to end of current chain
+                lastKeyCode = currentChar;
+                makeNewTran(tempLeft, tempRight);
+                
+                if( scanRightOne(input) == null ){
+                    if( tempRight != null ){
+                        lastKeyCode = EPS;
+                        makeNewTran(tempRight, tempLast);
+                    }
+                }
+            
+            } else if( /\*/.test( scanRightOne( input ) ) ){
+                    
+                input = input.substr(2);
+                // Create Kleene star section
+                var tempKleeneStates = attachKleeneStar( currentChar );
+                    
+                // link with current branch
+                if( tempLeft == null ){
+                    tempLeft = tempKleeneStates[0];
+                }
+                if( tempRight != null ){
+                    lastKeyCode = EPS;
+                    makeNewTran(tempRight, tempKleeneStates[0]);
+                }
+                
+                tempRight = tempKleeneStates[1];
+                    
+            }
+
+        } else if( /\|/.test( currentChar ) ){
+        
+            input = input.substr(1);
+            if( tempRight != null ){
+                lastKeyCode = EPS;
+                makeNewTran(tempRight, tempLast);
+            }
+                
+            tempLeft = null;
+            tempRight = null;
+            
+        } else {
+                // Machine is invalid.
+                isCreating = false;
+                isLooping = false;
+                resetMachine();
+        }
+        
+        if( input.length == 0 ){
+            isLooping = false;
+        }
+        
+    }
+    
+    return [tempFirst, tempLast];
 }
 
 /* Used on the finished NFA to connect the initial and final states. */
