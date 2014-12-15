@@ -5,6 +5,7 @@
  // Mouse position
 var mouseX = 0;
 var mouseY = 0;
+var clickX = 0, clickY = 0;
 
 // Offsets for drawing canvas and detecting input
 var y = c.offsetTop;
@@ -22,25 +23,79 @@ var tranStartState = null;
 var selectedState = null;
 var selectedTran = null;
 
+var drawingRect = false;
+var groupMoving = false;
+var group = new Array();
+
 // Called on mouseDown event
 function moveState(e){
+
 	handleEvent(e);
 	if( selectedState != null && pm == PlacementMode.STATE && selectedTran == null){
-		selectedState.moving = true;
+	    selectedState.moving = true;
+	    if (selectedState.groupMove) {
+	        for (var i = 0; i < group.length; i++) {
+	            group[i].moving = true;
+	            group[i].groupOffx = group[i].x - clickX;
+	            group[i].groupOffy = group[i].y - clickY;
+	        }
+	    }
+	}
+	if (selectedState == null && pm == PlacementMode.TRANSITION && selectedTran == null) {
+	    drawingRect = true;
 	}
 }
 
 // Called on mouseUp event
 function stopMoveState(e){
 	if( selectedState != null && pm == PlacementMode.STATE ){
-		selectedState.moving = false;
+	    selectedState.moving = false;
+	    if (selectedState.groupMove) {
+	        for (var i = 0; i < group.length; i++) {
+	            group[i].moving = false;
+	        }
+	        clickedState = null;
+	    }
 	}
+	if (selectedState == null && pm == PlacementMode.TRANSITION ){
+	    drawingRect = false;
+	    var endX = mouseX;
+	    var endY = mouseY;
+	    checkSelections(endX, endY);
+	}
+
+}
+
+function checkSelections(endX, endY) {
+
+    for (var i = 0; i < numStates; i++) {
+        var sel = false;
+        var tempState = Qstates[i];
+        if (tempState.x >= clickX && tempState.x <= endX) {
+            if (tempState.y <= clickY && tempState.y >= endY) {
+                sel = true;
+            } else if(tempState.y >= clickY && tempState.y <= endY) {
+                sel = true;
+            }
+        } else if (tempState.x <= clickX && tempState.x >= endX) {
+            if (tempState.y <= clickY && tempState.y >= endY) {
+                sel = true;
+            } else if (tempState.y >= clickY && tempState.y <= endY) {
+                sel = true;
+            }
+        }
+        if (sel) {
+            Qstates[i].groupMove = true;
+            groupMoving = true;
+            group.push(Qstates[i]);
+        }
+    }
 }
 
 // Called on any mouse Click
 function handleEvent(e){
  var evt = e ? e:window.event;
- var clickX=0, clickY=0;
+ clickX = 0; clickY=0;
 
  // Determine location of click
  if ((evt.clientX || evt.clientY) &&
@@ -52,6 +107,7 @@ function handleEvent(e){
   clickY -= Yoffset;
   
   clickedState = null;
+ 
   
   // Check each state
   for(var i=0;i<numStates;i++){
@@ -65,6 +121,14 @@ function handleEvent(e){
 	  }
   }
   
+  //deselects group move states
+  if (clickedState == null || !(clickedState.groupMove)) {
+      for (var i = 0; i < numStates; i++) {
+          Qstates[i].groupMove = false;
+          groupMoving = false;
+      }
+      group.length = 0;
+  }
   // A state is already selected
   if( selectedState != null){
   

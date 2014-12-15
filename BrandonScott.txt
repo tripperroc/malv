@@ -1,0 +1,11 @@
+Brandon Scott
+
+I have implemented the group selection with a selection box to move around multiple states at once.  
+
+In the real program I'm assuming they'll want to add another button with the hand symbol or something to
+attach this to, but for now it works when the transition button is selected.
+
+With the transition button selected, click and drag on the canvas to draw a selection rectangle around
+as many states as desired.  This will bold the selected states.  Then you move one of these states as
+before (by selecting the state button, clicking and dragging the state), and all of the other selected
+states will follow it maintaining their relative positions to one another.
