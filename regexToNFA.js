@@ -88,23 +88,50 @@ function regexToNFA( input ){
                     
                 }
                     
+            // This branches the entire input string.
             } else if( /\|/.test( currentChar ) ){
                     
-                    // Create branch section
-                    var tempBranch = attachBranch( input.substr(1) );
-                    input = input.substr( input.length ); // This branches the entire string.
+                //Create branch section
+                var tempBranch = attachBranch( input.substr(1) );
+                input = input.substr( input.length );
                     
-                    // link with main list
-                    if( head != null ){
-                        lastKeyCode = EPS;
-                        makeNewTran(tempBranch[0], head);
-                    }
-                    if( tail != null ){
-                        lastKeyCode = EPS;
-                        makeNewTran(tail, tempBranch[1]);
-                    }
-                    head = tempBranch[0];
-                    tail = tempBranch[1];
+                // link with main list
+                if( head != null ){
+                    lastKeyCode = EPS;
+                    makeNewTran(tempBranch[0], head);
+                }
+                if( tail != null ){
+                    lastKeyCode = EPS;
+                    makeNewTran(tail, tempBranch[1]);
+                }
+                head = tempBranch[0];
+                tail = tempBranch[1];
+            
+            } else if( /\(/.test( currentChar ) ){
+            
+                var match = findRightParen( input.substr(1) );
+                var tempGroup = null;
+                // Kleene star parentheses needs a special case.
+                if( input.charAt(match + 1) == '*' ){
+                    console.log( "Send1" );
+                    tempGroup = attachKleeneStar( input.substr(0, match + 1) );
+                    input = input.substr(match + 2);
+                // Otherwise, treat as a standard branch.
+                } else {
+                    console.log( "Send2" );
+                    tempGroup = attachBranch( input.substr( 1, match - 1 ) );
+                    input = input.substr(match + 1);
+                }
+                
+                // link with main list
+                if( head == null ){
+                    head = tempGroup[0];
+                }
+                if( tail != null ){
+                    lastKeyCode = EPS;
+                    makeNewTran(tail, tempGroup[0]);
+                }
+                tail = tempGroup[1];
             
             } else {
                 // Machine is invalid.
@@ -158,6 +185,8 @@ function createNewState(){
 
 function attachKleeneStar( input ){
 
+    console.log(input);
+
     var currentChar = '';
     var isLooping = true;
 
@@ -209,7 +238,25 @@ function attachKleeneStar( input ){
                 }
                 tempTail = tempRight;  
             
-            } 
+            }
+
+        } else if( /\(/.test(currentChar) ){
+        
+            var match = findRightParen( input.substr(1) );
+            var tempGroup = null;
+            // Kleene star parentheses needs a special case.
+            if( input.charAt(match + 1) == '*' ){
+                tempGroup = attachKleeneStar( input.substr(0, match + 1) );
+                input = input.substr(match + 2);
+            // Otherwise, treat as a standard branch.
+            } else {
+                tempGroup = attachBranch( input.substr( 1, match ) );
+                input = input.substr(match + 1);
+            }
+            
+            tempLeft = tempGroup[0];
+            tempRight = tempGroup[1];
+            tempTail = tempRight;
             
         } else {
                 // Machine is invalid.
@@ -238,7 +285,10 @@ function attachKleeneStar( input ){
     
 }
 
+/* Applies a branching section to the NFA. */
 function attachBranch( input ){
+
+    console.log(input);
 
     var currentChar = '';
     var isLooping = true;
@@ -312,13 +362,14 @@ function attachBranch( input ){
 
         } else if( /\|/.test( currentChar ) ){
         
+            tempLeft = null;
+            
             input = input.substr(1);
             if( tempRight != null ){
                 lastKeyCode = EPS;
                 makeNewTran(tempRight, tempLast);
             }
                 
-            tempLeft = null;
             tempRight = null;
             
         } else {
@@ -365,6 +416,28 @@ function attachEnds(){
     // If more states are added after converting, the numbers on them will be correct.
     numStates = stateCount;
     
+}
+
+/* Returns the location of the rightmost match for parentheses. */
+function findRightParen( input ){
+   
+    var leftmost = 1;
+    var loc = 0;
+    while( leftmost > 0 ){
+    
+        if( input.charAt(loc) == '(' ){
+            leftmost++;
+        } else if( input.charAt(loc) == ')' ){
+            leftmost--;
+        }
+        
+        loc++;
+        if( loc > input.length ){
+            return -1;
+        }
+    }
+    
+    return loc;
 }
 
 /* These are used to shift the position where states are drawn. */
