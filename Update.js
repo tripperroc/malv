@@ -15,7 +15,8 @@ function update(){
 	// animating is turned off when we want normal functionality, this will allow debug input to work	
 	if(!animating){
 	
-		// Clear the canvases
+	    // Clear the canvases
+	    
 		ctx.fillStyle="white";
 		ctx.fillRect(0,0,c.width,c.height);
 		ictx.fillStyle="#728C9A";
@@ -23,10 +24,12 @@ function update(){
 		pctx.fillStyle="#EEE9E9";
 		pctx.fillRect(0,0,pointerCanvas.width,pointerCanvas.height);
 		// Draw the elements in their current state
-		displayInputs(input,false);
+		displayInputs(input, false);
+
 		for(var i=0; i<Qstates.length; i++){
 			Qstates[i].display();
-		}		
+		}
+
 	}
 	
 	// Set the selected transitions attributes to those in the text boxes
@@ -41,6 +44,13 @@ function update(){
 		line(clickedState.x, clickedState.y, mouseX, mouseY+$(window).scrollTop(), ctx);
 		ctx.fillText(lastKeyCode,mouseX,mouseY+ $(window).scrollTop());
 	}
+
+	if (drawingRect) {
+	    
+	    ctx.rect(clickX, clickY, mouseX-clickX-15, mouseY-clickY);
+	    ctx.stroke();
+	}
+
 }
 
 // The interval that update is called on (milliseconds)

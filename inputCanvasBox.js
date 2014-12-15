@@ -34,7 +34,7 @@ function displayInputs(input,go){
 
 function drawPointer(index){
 	console.log(index);
-	pctx.fillStyle = "#EEE9E9";
+	pctx.fillStyle = "#FFF9E9";
 	pctx.strokeStyle = "black";
 	pctx.fillRect(0,0,pointerCanvas.width,pointerCanvas.height);
 	

@@ -16,6 +16,9 @@ function State( X, Y, id){
 	this.selected = false;
 	this.moving = false;
 	this.drawStartArrow = drawStartArrow;
+	this.groupMove = false;
+	this.groupOffx = 0;
+	this.groupOffy = 0;
 
 	// Functions
 	//this.snapTransition = snapTransitionToState;
@@ -55,10 +58,13 @@ function TuringState( X, Y, id){
 }
 //----------------------------------
 
-function stateDisplay(){
-	if(this.moving){
-		this.x = mouseX + $(window).scrollLeft();
-		this.y = mouseY + $(window).scrollTop();
+function stateDisplay() {
+    if (this.groupMove) {
+        ctx.lineWidth = 3;
+    }
+    if (this.moving) {
+        this.x = this.groupOffx + mouseX + $(window).scrollLeft();
+        this.y = this.groupOffy + mouseY + $(window).scrollTop();
 	}	
 	if(this.selected){
 		ctx.strokeStyle = '#ff0000';
@@ -66,6 +72,7 @@ function stateDisplay(){
 	else{
 		ctx.strokeStyle = '#000000';
 	}
+
 
 	if($.inArray(this, FStates) != -1){
 		//ctx.strokeStyle = "#00ff00"; // the correct way to denote accept state is nested circles
@@ -78,6 +85,7 @@ function stateDisplay(){
 		
 	}
 	ellipse(this.x, this.y, this.radius);
+	ctx.lineWidth = 1;
 
 	
 	// Draw the state with a circle
