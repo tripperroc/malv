@@ -18,8 +18,8 @@ The new code in this branch is for the Regex to NFA converter by Michael Schug.
 +-----------------+
 
  - Words (without any special characters) are all processed correctly.
- - The Kleene star function works on its own, or in combination with words.
- - The branching operation currently works inside of parentheses, but
-   can create incorrect transitions in words.
- - Parentheses have been implemented but are not fully functional yet.
+ - The Kleene star function works correctly.
+ - The branching operation does not link all branches to the starting node.
+ - Parentheses have been implemented, but transitions are broken in the same
+   manner as the branching operation.
 

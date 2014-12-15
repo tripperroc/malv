@@ -113,12 +113,12 @@ function regexToNFA( input ){
                 var tempGroup = null;
                 // Kleene star parentheses needs a special case.
                 if( input.charAt(match + 1) == '*' ){
-                    console.log( "Send1" );
+                    console.log( input.substr(0, match + 1) );
                     tempGroup = attachKleeneStar( input.substr(0, match + 1) );
                     input = input.substr(match + 2);
                 // Otherwise, treat as a standard branch.
                 } else {
-                    console.log( "Send2" );
+                    console.log( input.substr( 1, match - 1 ) );
                     tempGroup = attachBranch( input.substr( 1, match - 1 ) );
                     input = input.substr(match + 1);
                 }
@@ -185,8 +185,6 @@ function createNewState(){
 
 function attachKleeneStar( input ){
 
-    console.log(input);
-
     var currentChar = '';
     var isLooping = true;
 
@@ -246,11 +244,13 @@ function attachKleeneStar( input ){
             var tempGroup = null;
             // Kleene star parentheses needs a special case.
             if( input.charAt(match + 1) == '*' ){
+                console.log( input.substr(0, match + 1) );
                 tempGroup = attachKleeneStar( input.substr(0, match + 1) );
                 input = input.substr(match + 2);
             // Otherwise, treat as a standard branch.
             } else {
-                tempGroup = attachBranch( input.substr( 1, match ) );
+                console.log( input.substr( 1, match - 1 ) );
+                tempGroup = attachBranch( input.substr( 1, match - 1 ) );
                 input = input.substr(match + 1);
             }
             
@@ -313,19 +313,15 @@ function attachBranch( input ){
                 // pop first character and make a transition
                 input = input.substr(1);
                 
-                if( tempLeft == null ){
-                    tempLeft = createNewState();
-                    lastKeyCode = EPS;
-                    makeNewTran(tempFirst, tempLeft);
-                } else {
-                    tempLeft = createNewState();
-                }
+                tempLeft = createNewState();
                 
                 lastKeyCode = EPS;
                 
                 // link first state to end of current chain
                 if( tempRight != null ){
                     makeNewTran(tempRight, tempLeft);
+                } else {
+                    makeNewTran(tempFirst, tempLeft);
                 }
                 
                 tempRight = createNewState();
@@ -371,6 +367,32 @@ function attachBranch( input ){
             }
                 
             tempRight = null;
+            
+        } else if( /\(/.test(currentChar) ){
+        
+            var match = findRightParen( input.substr(1) );
+            var tempGroup = null;
+            // Kleene star parentheses needs a special case.
+            if( input.charAt(match + 1) == '*' ){
+                console.log( input.substr(0, match + 1) );
+                tempGroup = attachKleeneStar( input.substr(0, match + 1) );
+                input = input.substr(match + 2);
+            // Otherwise, treat as a standard branch.
+            } else {
+                console.log( input.substr( 1, match - 1 ) );
+                tempGroup = attachBranch( input.substr( 1, match - 1 ) );
+                input = input.substr(match + 1);
+            }
+            
+            
+            tempLeft = tempGroup[0];
+            
+            if( tempRight != null ){
+                lastKeyCode = EPS;
+                makeNewTran(tempRight, tempLeft);
+            }
+            
+            tempRight = tempGroup[1];
             
         } else {
                 // Machine is invalid.
